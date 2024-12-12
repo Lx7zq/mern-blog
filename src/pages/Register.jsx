@@ -1,6 +1,47 @@
-import React from "react";
+import { useState } from "react";
+import AuthService from "../services/auth.service";
+import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [user, setUesr] = useState({
+    username: "",
+    password: "",
+  });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUesr((user) => ({ ...user, [name]: value }));
+  };
+
+  const handdleSubmit = async () => {
+    try {
+      const currentUser = await AuthService.register(
+        user.username,
+        user.password
+      );
+      console.log(currentUser);
+      if (currentUser.status === 200) {
+        Swal.fire({
+          title: "User Registeration",
+          text: currentUser.data.message,
+          icon: "success",
+        });
+        setUesr({
+          username: "",
+          password: "",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "User Registeration",
+        text: error?.response?.data?.message || error.message,
+        icon: "error",
+      });
+    }
+  };
+
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-[30rem] bg-white p-8 rounded-lg shadow-lg space-y-6">
@@ -13,39 +54,29 @@ const Register = () => {
           <input
             type="text"
             placeholder="Full Name"
+            value={user.username}
+            name="username"
+            onChange={handleChange}
             className="w-full border-none bg-transparent outline-none placeholder:text-gray-400 focus:outline-none py-2 px-3"
           />
         </div>
-
-        {/* Email input */}
-        <div className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border-none bg-transparent outline-none placeholder:text-gray-400 focus:outline-none py-2 px-3"
-          />
-        </div>
-
         {/* Password input */}
         <div className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
           <input
             type="password"
             placeholder="Password"
-            className="w-full border-none bg-transparent outline-none placeholder:text-gray-400 focus:outline-none py-2 px-3"
-          />
-        </div>
-
-        {/* Confirm Password input */}
-        <div className="w-full transform border-b-2 bg-transparent text-lg duration-300 focus-within:border-indigo-500">
-          <input
-            type="password"
-            placeholder="Confirm Password"
+            value={user.password}
+            name="password"
+            onChange={handleChange}
             className="w-full border-none bg-transparent outline-none placeholder:text-gray-400 focus:outline-none py-2 px-3"
           />
         </div>
 
         {/* Register button */}
-        <button className="w-full transform rounded-sm bg-indigo-600 py-2 text-white font-bold duration-300 hover:bg-indigo-400 focus:outline-none">
+        <button
+          className="w-full transform rounded-sm bg-indigo-600 py-2 text-white font-bold duration-300 hover:bg-indigo-400 focus:outline-none"
+          onClick={handdleSubmit}
+        >
           CREATE ACCOUNT
         </button>
 
@@ -53,7 +84,7 @@ const Register = () => {
         <div className="text-center">
           <p className="text-sm">
             Already have an account?{" "}
-            <a href="#" className="text-indigo-500 hover:text-indigo-400">
+            <a href="/login" className="text-indigo-500 hover:text-indigo-400">
               Log In
             </a>
           </p>
