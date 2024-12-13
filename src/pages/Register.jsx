@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthService from "../services/auth.service";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import { useAuthContext } from "../context/AuthContext";
 
 const Register = () => {
+  const { user: loggedUser } = useAuthContext();
   const navigate = useNavigate();
-  const [user, setUesr] = useState({
+
+  useEffect(() => {
+    if (loggedUser) {
+      navigate("/");
+    }
+  }, [loggedUser]);
+
+  const [user, setUser] = useState({
     username: "",
     password: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUesr((user) => ({ ...user, [name]: value }));
+    setUser((user) => ({ ...user, [name]: value }));
   };
 
   const handdleSubmit = async () => {
@@ -27,7 +36,7 @@ const Register = () => {
           text: currentUser.data.message,
           icon: "success",
         });
-        setUesr({
+        setUser({
           username: "",
           password: "",
         });

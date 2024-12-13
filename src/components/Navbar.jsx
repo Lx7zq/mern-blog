@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useAuthContext } from "../context/AuthContext";
 import { Link } from "react-router";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
+  const { user, logout } = useAuthContext();
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Logout",
+      text: "Do you want to logout?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout(); // เรียก logout ที่จะทำการลบ cookies และเคลียร์ข้อมูล
+        Swal.fire({
+          title: "Logout",
+          text: "Logout Successfully",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -36,52 +60,21 @@ const Navbar = () => {
         <a className="btn btn-ghost text-xl">Web-Blog</a>
       </div>
       <div className="navbar-end">
-        {/* Existing button (search icon) */}
-        <button className="btn btn-ghost btn-circle">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </button>
-
-        {/* Existing notification button */}
-        <button className="btn btn-ghost btn-circle">
-          <div className="indicator">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
-            </svg>
-            <span className="badge badge-xs badge-primary indicator-item"></span>
+        {/* เช็คว่า user มีค่า (ผู้ใช้ล็อกอิน) หรือไม่ */}
+        {user ? (
+          <button className="btn btn-secondary ml-2" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <div>
+            <Link to="/login">
+              <button className="btn btn-primary ml-2">Login</button>
+            </Link>
+            <Link to="/register">
+              <button className="btn btn-outline ml-2">Register</button>
+            </Link>
           </div>
-        </button>
-
-        {/* Login and Register links */}
-        <Link to="/login">
-          <button className="btn btn-primary ml-2">Login</button>
-        </Link>
-        <Link to="/register">
-          <button className="btn btn-outline ml-2">Register</button>
-        </Link>
+        )}
       </div>
     </div>
   );
