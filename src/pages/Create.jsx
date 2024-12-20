@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import PostService from "../services/post.service";
+import Editor from "../components/Editor";
 
 const Create = () => {
   const [postDetail, setPostDetail] = useState({
@@ -10,6 +12,8 @@ const Create = () => {
     content: "",
     file: null,
   });
+  const [content, setContent] = useState("");
+  const editorRef = useRef(null);
   const navigate = useNavigate();
 
   // Handle input change
@@ -20,6 +24,11 @@ const Create = () => {
     } else {
       setPostDetail({ ...postDetail, [name]: value });
     }
+  };
+
+  const handleContentChange = (value) => {
+    setContent(value);
+    setPostDetail({ ...postDetail, content: content });
   };
 
   // Handle form submission
@@ -103,22 +112,11 @@ const Create = () => {
         </div>
 
         {/* Content Field */}
-        <div>
-          <label
-            htmlFor="content"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Content:
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            value={postDetail.content}
-            onChange={handleChange}
-            required
-            className="mt-2 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
-          ></textarea>
-        </div>
+        <Editor
+          value={content}
+          onChange={handleContentChange}
+          ref={editorRef}
+        ></Editor>
 
         {/* File Upload Field */}
         <div>

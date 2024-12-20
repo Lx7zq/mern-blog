@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     AuthService.logout(); // ฟังก์ชัน logout ที่คุณต้องการ (ตรวจสอบให้แน่ใจว่าไม่มีปัญหากับ cookie)
     setUser(null); // ลบ user ใน state
-    cookie.remove("user", { path: "/" }); // ลบ cookie ที่เก็บข้อมูลผู้ใช้
   };
 
   // useEffect hook สำหรับการอัพเดท cookie เมื่อ user state เปลี่ยน

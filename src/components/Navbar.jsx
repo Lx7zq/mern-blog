@@ -51,13 +51,15 @@ const Navbar = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a>CreatePost</a>
+              <a href="/create">CreatePost</a>
             </li>
           </ul>
         </div>
       </div>
       <div className="navbar-center">
-        <a className="btn btn-ghost text-xl">Web-Blog</a>
+        <a href="/" className="btn btn-ghost text-xl">
+          Web-Blog
+        </a>
       </div>
       <div className="navbar-end">
         {/* เช็คว่า user มีค่า (ผู้ใช้ล็อกอิน) หรือไม่ */}
