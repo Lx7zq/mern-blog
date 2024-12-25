@@ -13,10 +13,11 @@ const getUser = () => {
 };
 
 const setUser = (user) => {
-  cookies.set("uesr", JSON.stringify(user), {
+  cookies.set("user", JSON.stringify(user), {
     path: "/",
     expires: new Date(Date.now() + 86400 * 1000),
   });
+  return setUser;
 };
 
 const removeUser = () => {
