@@ -18,15 +18,25 @@ const getPostById = async (id) => {
   return await api.get(`${API_URL}/${id}`);
 };
 
-const deleteById = async (id) =>{
+const getPostByAuthor = async (id) => {
+  return await api.get(`${API_URL}/author/${id}`)
+}
+
+const deleteById = async (id) => {
   return await api.delete(`${API_URL}/${id}`)
 }
+
+const updatePost = async (id, post) => {
+  return await api.put(`${API_URL}/${id}`, post);
+};
 
 const PostService = {
   createPost,
   getPost,
   getPostById,
+  getPostByAuthor,
   deleteById,
+  updatePost
 };
 
 export default PostService;

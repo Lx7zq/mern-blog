@@ -1,20 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import PostService from "../services/post.service";
 import Swal from "sweetalert2";
-import { useParams, useNavigate } from "react-router";
 import { useAuthContext } from "../context/AuthContext";
+// const baseURL = import.meta.env.VITE_PIC_URL;
+
 import { format } from "date-fns";
 
-const baseURL = import.meta.env.VITE_PIC_URL;
+format(new Date(2014, 1, 11), "yyyy-MM-dd");
 
 const PostDetail = () => {
   const [postDetail, setPostDetail] = useState(null);
-  const { user } = useAuthContext();
   const { id } = useParams();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPostDetail = async () => {
+    const fetchPost = async () => {
       try {
         const response = await PostService.getPostById(id);
         if (response.status === 200) {
@@ -28,20 +30,20 @@ const PostDetail = () => {
         });
       }
     };
-    fetchPostDetail();
+    fetchPost();
   }, [id]);
 
   const handleDelete = () => {
     Swal.fire({
       title: "Delete",
-      text: "Do you want to delete this post?",
+      text: "Do you want to deltete this post?",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes",
       cancelButtonText: "No",
     }).then((result) => {
       if (result.isConfirmed) {
-        PostService.deleteById(id); // เรียกใช้ฟังก์ชัน delete
+        PostService.deleteById(id);
         Swal.fire({
           title: "Delete Post",
           text: "Delete successfully",
@@ -53,54 +55,51 @@ const PostDetail = () => {
     });
   };
 
-  return postDetail ? (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="card bg-white w-full md:w-3/4 lg:w-2/3 xl:w-1/2 shadow-xl rounded-lg p-8">
-        <div className="card-body">
-          <h2 className="card-title">{postDetail.title}</h2>
-          <div className="text-gray-600 mb-4">
-            <time>
-              {format(new Date(postDetail.createdAt), "dd MMMM yyyy HH:mm")}
-            </time>
-            <div className="author mb-2">
-              <span className="text-blue-500">
-                @{postDetail.author.username}
-              </span>
-            </div>
-            {user.id === postDetail.author._id && (
-              <div className="flex space-x-4 mt-6">
-                {/* ปุ่ม Edit */}
-                <button
-                  // onClick={() => handleEdit(postDetail._id)}  // ฟังก์ชันที่จัดการการแก้ไข
-                  className="btn btn-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Edit
-                </button>
+  if (!postDetail) return <div>NOT FOUND</div>;
+  return (
+    <div className="post-page win-h-full min-w-full flex items-center p-4 pt-20 text-center">
+      <div className="bg-white p-8 rounded0-bg shadow-lg max-4xl w-full">
+        <h1 className="text-3xl font-bold mb-4 text-grey-800">
+          {postDetail.title}
+        </h1>
 
-                {/* ปุ่ม Delete */}
-                <button
-                  onClick={() => handleDelete(postDetail._id)} // ฟังก์ชันที่จัดการการลบ
-                  className="btn btn-danger text-white px-4 py-2 rounded-lg hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-
-            <div className="btn"></div>
-            <div
-              className="content text-gray-700"
-              dangerouslySetInnerHTML={{ __html: postDetail.content }}
-            ></div>
-            <figure>
-              <img src={`${baseURL}/${postDetail.cover}`} />
-            </figure>
+        <div className="text-grey-600 mb-4 text-center">
+          <time className="block mb-2">
+            {format(postDetail.createdAt, "dd MMMM yyyy HH:mm")}
+          </time>
+          <div className="author mb-2">
+            <span className="text-blue-500">
+              @
+              <a href={`/author/${postDetail.author._id}`}>
+                {postDetail.author.username}
+              </a>
+            </span>
           </div>
         </div>
+        {user?.id === postDetail.author._id && (
+          <div className="edit-row mb-4 text-center flex items-center justify-center gap-2">
+            <a href={`/edit/${postDetail._id}`} className="btn btn-warning">
+              Edit Post
+            </a>
+            <a
+              className="btn btn-error"
+              onClick={() => handleDelete(postDetail._id)}
+            >
+              Delete Post
+            </a>
+          </div>
+        )}
+        <img
+          src={`${postDetail.cover}`}
+          alt={postDetail.title}
+          className="w-full h-64 object-cover mb-4"
+        />
+        <div
+          className="content text-grey-700"
+          dangerouslySetInnerHTML={{ __html: postDetail.content }}
+        ></div>
       </div>
     </div>
-  ) : (
-    <div></div>
   );
 };
 
